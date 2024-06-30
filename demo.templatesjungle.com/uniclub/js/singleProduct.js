@@ -1,6 +1,8 @@
 $(document).ready(function () {
   var idProduct = getQueryParam("id");
   let product = [];
+  let selectColorId;
+  let selectSizeId;
 
   // Fetch dữ liệu từ API all products
   function fetchGetProduct() {
@@ -53,7 +55,6 @@ $(document).ready(function () {
   }
 
   function renderCategory(category) {
-   
     if (category.length > 0) {
       var htmlCategory = "";
       for (i = 0; i < category.length; i++) {
@@ -77,42 +78,114 @@ $(document).ready(function () {
     }
   }
 
-  
-
   function renderColors(productDetails) {
     const uniqueColors = {};
+
     productDetails.forEach((detail) => {
       uniqueColors[detail.color.id] = detail.color;
     });
     // Convert objects to arrays
     const colors = Object.values(uniqueColors);
+    console.log(colors);
     var htmlColorList = "";
 
-        colors.forEach((color) => {
-          htmlColorList += `<li class="select-item pe-3" data-val="${color.id}"  title=${color.name}>
-                      <button class="btn btn-light fs-6">${color.name}</button>
+    for (i = 0; i < colors.length; i++) {
+      htmlColorList += `<li id="" class="select-item-color select-item pe-3 ${
+        i == 0 ? "disabled" : ""
+      }" data-val="${colors[i].id}"  title=${colors[i].name} >
+                      <button class="btn btn-light fs-6 ${
+                        i == 0 ? "active" : ""
+                      } " >${colors[i].name}</button>
                     </li>`;
-        });
-        $("#color-list").empty().append(htmlColorList);
+    }
+    $("#color-list").empty().append(htmlColorList);
 
+    renderImagesProduct(productDetails, (currentColorId = colors[0].id));
   }
 
-  function renderSizes(productDetails){
+  function renderSizes(productDetails) {
     const uniqueSizes = {};
     productDetails.forEach((detail) => {
-        uniqueSizes[detail.size.id] = detail.size;
-      });
+      uniqueSizes[detail.size.id] = detail.size;
+    });
 
-      const sizes = Object.values(uniqueSizes);
+    const sizes = Object.values(uniqueSizes);
 
-      var htmlSizeList = ""
-      sizes.forEach((size) => {
-        htmlSizeList += `<li data-value="XL" class="select-item pe-3">
-              <button id="" class="btn btn-light fs-6" >${size.name}</button>
+    var htmlSizeList = "";
+    sizes.forEach((size) => {
+      htmlSizeList += `<li id="" data-val=${size.id} class="select-item-size select-item pe-3">
+              <button class="btn btn-light fs-6" >${size.name}</button>
             </li>`;
-      });
-      $("#size-list").empty().append(htmlSizeList);
+    });
+    $("#size-list").empty().append(htmlSizeList);
   }
+
+  function renderImagesProduct(productDetails, idCurrentColor) {
+    const uniqueColors = {};
+
+    productDetails.forEach((detail) => {
+      uniqueColors[detail.color.id] = detail.color;
+    });
+    // Convert objects to arrays
+    const colors = Object.values(uniqueColors);
+
+    const currentColor = colors.find((color) => color.id === idCurrentColor);
+    console.log("currentColor", currentColor);
+    if (!currentColor || !currentColor.images) {
+      console.error("No images found for the current color");
+      return;
+    }
+    // process
+    var htmlProductLargeSlider = "";
+    var htmlProductThumbnailSlider = "";
+   
+    currentColor.images.forEach((item) => {
+      htmlProductLargeSlider += ` <div class="swiper-slide">
+                       <img src="${item}" alt="product-large" class="img-fluid">
+                     </div>`;
+
+      htmlProductThumbnailSlider += `<div class="swiper-slide">
+                   <img src="${item}" alt="" class="thumb-image img-fluid">
+                 </div>`;
+    });
+ 
+    $("#product-large-slider").empty().append(htmlProductLargeSlider);
+    $("#product-thumbnail-slider").empty().append(htmlProductThumbnailSlider);
+  }
+
+  // Gán sự kiện click cho các phần tử có class là .select-item
+  $(document).on("click", ".select-item-color", function () {
+    if ($(this).hasClass("disabled")) {
+      return;
+    }
+    // Xóa class "active" khỏi tất cả các phần tử <button>
+    $(".select-item-color button").removeClass("active");
+    $(".select-item-color").removeClass("disabled");
+    // Thêm class "active" cho phần tử <button> được click
+    $(this).find("button").addClass("active");
+    $(this).addClass("disabled");
+    // Lấy giá trị của thuộc tính data-val
+    selectColorId = $(this).data("val");
+    console.log(selectColorId);
+    // Thực hiện các hành động khác nếu cần
+    renderImagesProduct(product.productDetailList, selectColorId);
+  });
+
+  $(document).on("click", ".select-item-size", function () {
+    if ($(this).hasClass("disabled")) {
+      return;
+    }
+     // Xóa class "active" khỏi tất cả các phần tử <button>
+     $(".select-item-size button").removeClass("active");
+     $(".select-item-size").removeClass("disabled");
+     // Thêm class "active" cho phần tử <button> được click
+     $(this).find("button").addClass("active");
+     $(this).addClass("disabled");
+
+     selectSizeId = $(this).data("val");
+     
+  })
+
 
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);

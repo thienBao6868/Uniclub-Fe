@@ -791,6 +791,7 @@ Checkout page style start
 
 
 
+
 /*--------------------------------------------------------------
 Account page style start
 --------------------------------------------------------------*/
@@ -811,4 +812,12 @@ Styles page style start
 --------------------------------------------------------------*/
 .chocolat-wrapper {
   z-index: 9999;
+}
+
+/* add css */
+
+.disabled button {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
