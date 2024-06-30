@@ -1,4 +1,6 @@
 $(document).ready(function () {
+ 
+
   let allProducts = [];
   let allCategory = [];
   let allTag = [];
@@ -24,9 +26,11 @@ $(document).ready(function () {
   let lowPrice = Number(getQueryParam("lowPrice"));
   let highPrice = Number(getQueryParam("highPrice"));
 
+  let nameProduct = getQueryParam("name");
+
   console.log(idCategory);
   // Fetch dữ liệu từ API all products
-  function fetchAllProducts(pageIndex = 1, pageSize = 9, idCategory, idTag, lowPrice, highPrice) {
+  function fetchAllProducts(pageIndex = 1, pageSize = 9, idCategory, idTag, lowPrice, highPrice, nameProduct) {
     let rootUrl = `http://localhost:8080/product/all?pageIndex=${pageIndex}&pageSize=${pageSize}`;
     let rootData = {};
     let rootMethod = "GET";
@@ -62,9 +66,22 @@ $(document).ready(function () {
         pageIndex: pageIndex,
         pageSize: pageSize,
       });
-      console.log(rootData)
+      
       rootMethod ="POST"
     }
+
+    if(nameProduct){
+      rootUrl = `http://localhost:8080/product/by-name`;
+      
+      rootData = JSON.stringify({
+        name:nameProduct,
+        pageIndex: pageIndex,
+        pageSize: pageSize,
+      });
+      
+      rootMethod ="POST"
+    }
+
 
     $.ajax({
       url: rootUrl,
@@ -81,7 +98,7 @@ $(document).ready(function () {
       },
     });
   }
-  fetchAllProducts(pageIndex, pageSize,idCategory, idTag, lowPrice, highPrice);
+  fetchAllProducts(pageIndex, pageSize,idCategory, idTag, lowPrice, highPrice,nameProduct);
 
   // Hàm render sản phẩm ra giao diện
   function renderProducts(products) {
@@ -186,6 +203,33 @@ $(document).ready(function () {
     $(".product-price").empty().append(htmlFilterByPrice);
   }
   renderFilterByPrice(priceList);
+
+  $("#search-form-by-name").on('submit', function(event) {
+    event.preventDefault(); 
+
+    let searchQuery = $('#search-input').val().trim();
+
+    if (searchQuery !== '') {
+      // Xây dựng URL hoặc thực hiện hành động cần thiết ở đây
+      console.log('Đang tìm kiếm sản phẩm có từ khóa:', searchQuery);
+      
+      // Tạo URL với dữ liệu truyền vào
+      let url = `http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/shop.html?name=${searchQuery}`;
+      
+      // Load lại URL
+      window.location.href = url;
+  } else {
+      // Xử lý khi không có nội dung để search
+      console.log('Vui lòng nhập nội dung để tìm kiếm.');
+      // Hoặc có thể làm gì đó khác nếu muốn
+  }
+
+
+});
+ 
+
+
+
 
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
