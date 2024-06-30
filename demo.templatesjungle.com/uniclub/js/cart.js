@@ -23,15 +23,15 @@ $(document).ready(function(){
                     </div>
                     <div class="col-lg-9">
                       <div class="card-detail ps-3">
-                        <h5 class="card-title">
+                        <h6 class="card-title">
                           <a href="#" class="text-decoration-none">${item.productName}</a>
-                        </h5>
+                        </h6>
                       </div>
                     </div>
                   </div>
                 </td>
                 <td class="py-4 align-middle">
-                  <div class="input-group product-qty align-items-center w-50">
+                  <div class="input-group product-qty align-items-center w-55>
                     <span class="input-group-btn">
                       <button type="button" class="quantity-left-minus p-1 btn btn-light btn-number" data-type="minus">
                         <svg width="16" height="16">

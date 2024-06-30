@@ -1,13 +1,11 @@
 $(document).ready(function () {
-  console.log("check")
+ 
   $.ajax({
     method: "GET",
     url: "http://localhost:8080/product/all?pageIndex=1&pageSize=8",
   }).done(function (result) {
-    console.log(result)
-    console.log("check 1")
     if (result.data.length > 0) {
-      console.log("check 2")
+    
       var htmlContent = "";
       for (i = 0; i < result.data.length; i++) {
         htmlContent += `<div class="col-md-6 col-lg-3 my-4">
@@ -19,7 +17,7 @@ $(document).ready(function () {
             </div>
             <div class="cart-concern">
               <div class="cart-button d-flex justify-content-between align-items-center">
-                <a href="single-product.html" class="btn-wrap cart-link d-flex align-items-center text-capitalize fs-6 ">add to cart <i
+                <a href="single-product.html?id=${result.data[i].id}" class="btn-wrap cart-link d-flex align-items-center text-capitalize fs-6 ">add to cart <i
                     class="icon icon-arrow-io pe-1"></i>
                 </a>
                 <a href="single-product.html?id=${result.data[i].id}" class="view-btn">

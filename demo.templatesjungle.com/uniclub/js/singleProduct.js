@@ -1,122 +1,120 @@
 $(document).ready(function () {
- // Get the value of the 'id' parameter
- const id = getQueryParam("id");
+  var idProduct = getQueryParam("id");
+  let product = [];
 
-  $.ajax({
-    method: "GET",
-    url: `http://localhost:8080/product/detail?idProduct=${id}`,
-  }).done(function (result) {
+  // Fetch dữ liệu từ API all products
+  function fetchGetProduct() {
+    $.ajax({
+      url: `http://localhost:8080/product/detail?idProduct=${idProduct}`,
+      method: "GET",
+      success: function (data) {
+        product = data.data;
+        console.log(product);
+        renderProduct(product);
+      },
+      error: function (error) {
+        console.error("Error fetching all products:", error);
+      },
+    });
+  }
 
-    console.log(result)
-    if (result && result.statusCode == 200) {
-       data = result.data;
-      var nameProduct = `<span>${
-        result.data.name ? result.data.name : "Name Product"
-      }</span>`;
-      $("#name-product").append(nameProduct);
+  // Gọi API all products khi lần đầu load trang
+  fetchGetProduct();
 
-      var price = `<span>$${
-        result.data.price ? result.data.price : "Price"
-      }</span>`;
-      $("#price-product").append(price);
+  function renderProduct(product) {
+    renderNameProduct(product.name);
+    renderPrice(product.price);
+    renderDesc(product.description);
+    renderSku(product.sku);
+    renderCategory(product.categoryList);
+    renderTags(product.tagList);
+    renderColors(product.productDetailList);
+    renderSizes(product.productDetailList);
+  }
 
-      var desc = `<span>${
-        result.data.description
-          ? result.data.description
-          : "Description Product"
-      }</span>`;
-      $("#desc-product").append(desc);
+  function renderNameProduct(name) {
+    var nameProduct = `<span>${name ? name : "Name Product"}</span>`;
+    $("#name-product").empty().append(nameProduct);
+  }
 
-      var sku = ` <li data-value="S" class="select-item">${data.sku}</li>`;
-      $("#sku-product").append(sku);
+  function renderPrice(price) {
+    var priceProduct = `<span>$${price ? price : "Price"}</span>`;
+    $("#price-product").empty().append(priceProduct);
+  }
 
-      if (data.productDetailList.length > 0) {
-        // Process data to remove duplicates
-        const productDetails = data.productDetailList;
-        const uniqueColors = {};
-        const uniqueSizes = {};
+  function renderDesc(desc) {
+    var descPro = `<span>${desc ? desc : "Description Product"}</span>`;
+    $("#desc-product").empty().append(descPro);
+  }
 
-        productDetails.forEach((detail) => {
-          uniqueColors[detail.color.id] = detail.color;
-          uniqueSizes[detail.size.id] = detail.size;
-        });
+  function renderSku(sku) {
+    var skuPro = ` <li data-value="S" class="select-item">${sku}</li>`;
+    $("#sku-product").empty().append(skuPro);
+  }
 
-        // Convert objects to arrays
-        const colors = Object.values(uniqueColors);
-        const sizes = Object.values(uniqueSizes);
+  function renderCategory(category) {
+   
+    if (category.length > 0) {
+      var htmlCategory = "";
+      for (i = 0; i < category.length; i++) {
+        htmlCategory += `<li data-value="S" class="select-item">
+                  <a href="#">${category[i].name}</a>,
+                </li>`;
+      }
+      $("#category-list").empty().append(htmlCategory);
+    }
+  }
 
-        var htmlColorList = "";
+  function renderTags(tags) {
+    if (tags.length > 0) {
+      var htmlTag = "";
+      for (i = 0; i < tags.length; i++) {
+        htmlTag += `<li data-value="S" class="select-item">
+                  <a href="#">${tags[i].name}</a>,
+                </li>`;
+      }
+      $("#tag-list").empty().append(htmlTag);
+    }
+  }
+
+  
+
+  function renderColors(productDetails) {
+    const uniqueColors = {};
+    productDetails.forEach((detail) => {
+      uniqueColors[detail.color.id] = detail.color;
+    });
+    // Convert objects to arrays
+    const colors = Object.values(uniqueColors);
+    var htmlColorList = "";
 
         colors.forEach((color) => {
           htmlColorList += `<li class="select-item pe-3" data-val="${color.id}"  title=${color.name}>
                       <button class="btn btn-light fs-6">${color.name}</button>
                     </li>`;
         });
-        $("#color-list").append(htmlColorList);
+        $("#color-list").empty().append(htmlColorList);
 
-        var htmlSizeList = "";
+  }
 
-        sizes.forEach((size) => {
-          htmlSizeList += `<li data-value="XL" class="select-item pe-3">
-                <button id="" class="btn btn-light fs-6" >${size.name}</button>
-              </li>`;
-        });
-        $("#size-list").append(htmlSizeList);
+  function renderSizes(productDetails){
+    const uniqueSizes = {};
+    productDetails.forEach((detail) => {
+        uniqueSizes[detail.size.id] = detail.size;
+      });
 
-        if (data.categoryList.length > 0) {
-          var htmlCategory = "";
-          for (i = 0; i < data.categoryList.length; i++) {
-            htmlCategory += `<li data-value="S" class="select-item">
-                    <a href="#">${data.categoryList[i].name}</a>,
-                  </li>`;
-          }
-          $("#category-list").append(htmlCategory);
-        }
-        if (data.tagList.length > 0) {
-          var htmlTag = "";
-          for (i = 0; i < data.tagList.length; i++) {
-            htmlTag += `<li data-value="S" class="select-item">
-                    <a href="#">${data.tagList[i].name}</a>,
-                  </li>`;
-          }
-          $("#tag-list").append(htmlTag);
-        }
+      const sizes = Object.values(uniqueSizes);
 
+      var htmlSizeList = ""
+      sizes.forEach((size) => {
+        htmlSizeList += `<li data-value="XL" class="select-item pe-3">
+              <button id="" class="btn btn-light fs-6" >${size.name}</button>
+            </li>`;
+      });
+      $("#size-list").empty().append(htmlSizeList);
+  }
 
-        // process 
-        var htmlProductLargeSlider = "";
-        var htmlProductThumbnailSlider = "";
-
-        images = colors[0].images;
-          images.forEach((item) => {
-            htmlProductLargeSlider += ` <div class="swiper-slide">
-                          <img src="${item}" alt="product-large" class="img-fluid">
-                        </div>`;
-
-            htmlProductThumbnailSlider += `<div class="swiper-slide">
-                      <img src="${item}" alt="" class="thumb-image img-fluid">
-                    </div>`;
-          });
-
-          $("#product-large-slider").append(htmlProductLargeSlider);
-        $("#product-thumbnail-slider").append(htmlProductThumbnailSlider);
-
-      }
-      // xử lý trong hàm done của ajax 
-      
-        // Handle button click events
-        $('.btn.btn-light.fs-6').on('click', function(event) {
-            event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ <a>
-            $('.btn.btn-light.fs-6').removeClass('active'); // Remove 'active' class from all buttons
-            $(this).addClass('active'); // Add 'active' class to the clicked button
-          });
-
-
-
-    }
-  })
-
-function getQueryParam(param) {
+  function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
   }
