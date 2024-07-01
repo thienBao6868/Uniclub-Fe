@@ -19,6 +19,43 @@ $(document).ready(function () {
       },
     });
   }
+  // Fetch API InSert Product in cart
+  function insertProductToCart(idProduct, idColor, idSize, quantity) {
+    console.log("process insert to cart");
+    let produtId = Number(idProduct);
+    let colorId = Number(idColor);
+    let sizeId = Number(idSize);
+    let sl = Number(quantity);
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      $.ajax({
+        url: `http://localhost:8080/cart`,
+        method: "POST",
+        contentType: "application/json",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: JSON.stringify({
+          idProduct: produtId,
+          idSize: sizeId,
+          idColor: colorId,
+          quantity: sl,
+        }),
+        success: function (data) {
+          if (data.statusCode == 200) {
+            window.location.href =
+              "http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/cart.html";
+          }
+        },
+        error: function (error) {
+          console.error("Error insert product incart :", error);
+        },
+      });
+    } else {
+      window.location.href = "http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/account.html"
+    }
+  }
 
   // Gọi API all products khi lần đầu load trang
   fetchGetProduct();
@@ -100,7 +137,7 @@ $(document).ready(function () {
                     </li>`;
     }
     $("#color-list").empty().append(htmlColorList);
-    selectColorId = colors[0].id
+    selectColorId = colors[0].id;
 
     renderImagesProduct(productDetails, selectColorId);
   }
@@ -158,8 +195,8 @@ $(document).ready(function () {
   // render quantity in stock
 
   function renderQuantityInstock(selectColorId, selectSizeId) {
-    console.log("selectColorId  ",selectColorId)
-    console.log("selectSize", selectSizeId)
+    console.log("selectColorId  ", selectColorId);
+    console.log("selectSize", selectSizeId);
 
     var htmlInStock = "";
 
@@ -169,8 +206,8 @@ $(document).ready(function () {
       );
       if (productDetailWithIdColorAndIdSize) {
         htmlInStock = `<em>${productDetailWithIdColorAndIdSize?.quantity} in stock</em>`;
-      }else{
-        htmlInStock = `<em> in stock</em>`
+      } else {
+        htmlInStock = `<em> in stock</em>`;
       }
     } else {
       htmlInStock = `<em> in stock</em>`;
@@ -179,6 +216,74 @@ $(document).ready(function () {
     $(".stock-number").empty().append(htmlInStock);
     // <div class="stock-number text-dark"><em>2 in stock</em></div>
   }
+
+  var initProductQty = function () {
+    $(".product-qty").each(function () {
+      var $el_product = $(this);
+
+      $el_product.find(".quantity-right-plus").click(function (e) {
+        e.preventDefault();
+        var quantity = parseInt($el_product.find("#quantity").val());
+        $el_product
+          .find("#quantity")
+          .val(quantity + 1)
+          .trigger("change");
+      });
+
+      $el_product.find(".quantity-left-minus").click(function (e) {
+        e.preventDefault();
+        var quantity = parseInt($el_product.find("#quantity").val());
+        if (quantity > 0) {
+          $el_product
+            .find("#quantity")
+            .val(quantity - 1)
+            .trigger("change");
+        }
+      });
+
+      // Xử lý sự kiện input để kiểm soát giá trị nhập vào
+      $el_product.find("#quantity").on("input", function () {
+        var value = $(this).val();
+        // Xóa tất cả các ký tự không phải là số
+        value = value.replace(/[^0-9]/g, "");
+
+        // Cập nhật lại giá trị của input
+        $(this).val(value).trigger("change");
+      });
+
+      // Xử lý sự kiện blur để đảm bảo giá trị không nhỏ hơn 1 khi người dùng rời khỏi ô nhập liệu
+      $el_product.find("#quantity").on("blur", function () {
+        var value = $(this).val();
+
+        // Đảm bảo giá trị không nhỏ hơn 1
+        if (value === "" || parseInt(value) < 1) {
+          value = 1;
+        }
+
+        // Cập nhật lại giá trị của input
+        $(this).val(value).trigger("change");
+      });
+
+      // Xử lý sự kiện keypress để ngăn không cho nhập ký tự không phải số
+      $el_product.find("#quantity").on("keypress", function (event) {
+        // Kiểm tra nếu ký tự nhập vào không phải là số
+        if (event.which < 48 || event.which > 57) {
+          event.preventDefault();
+        }
+      });
+
+      // Listen for the change event to perform additional actions
+      $el_product.find("#quantity").on("change", function () {
+        var updatedQuantity = $(this).val();
+        console.log("Quantity updated to:", updatedQuantity);
+        // You can perform additional actions here if needed
+        $(this).removeClass("value");
+        $(this).attr("value", updatedQuantity);
+      });
+    });
+  };
+
+  initProductQty();
 
   // Gán sự kiện click cho các phần tử có class là .select-item
   $(document).on("click", ".select-item-color", function () {
@@ -213,6 +318,23 @@ $(document).ready(function () {
     selectSizeId = $(this).data("val");
 
     renderQuantityInstock(selectColorId, selectSizeId);
+  });
+
+  $("#button-add-to-cart").on("click", function (e) {
+    e.preventDefault();
+    let quantity = Number($("#quantity").val());
+    if (idProduct && selectColorId && selectSizeId && quantity) {
+      const productDetailWithIdColorAndIdSize = product.productDetailList.find(
+        (item) => item.color.id == selectColorId && item.size.id == selectSizeId
+      );
+      if (productDetailWithIdColorAndIdSize) {
+        insertProductToCart(idProduct, selectColorId, selectSizeId, quantity);
+      } else {
+        console.log("Không tìm thấy sản phẩm có color và size mà bạn đã chọn");
+      }
+    } else {
+      console.log("Vui Lòng nhập chọn Đầy đủ thông tin: color, size, quantity");
+    }
   });
 
   function getQueryParam(param) {

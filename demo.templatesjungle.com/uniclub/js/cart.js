@@ -1,6 +1,10 @@
 $(document).ready(function(){
     var token = localStorage.getItem("token")
 
+    if(!token){
+      window.location.href = "http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/account.html"
+    }
+
     $.ajax({
         method: "GET",
         headers:{
@@ -11,7 +15,9 @@ $(document).ready(function(){
         console.log(result)
         if(result && result.data.length > 0){
             var html="";
+            var totalPrice = 0;
             for(i=0; i< result.data.length; i++){
+                
                 var item = result.data[i];
                 html += `<tr id-product=${item.id} id-color=${item.idColor} id-size=${item.idSize}>
                 <td scope="row" class="py-4">
@@ -58,18 +64,29 @@ $(document).ready(function(){
                 </td>
                 <td class="py-4 align-middle">
                   <div class="cart-remove">
-                    <a href="#">
+                    <button class="select-deleted" id-cart=${item.id}>
                       <svg width="24" height="24">
                         <use xlink:href="#trash"></use>
                       </svg>
-                    </a>
+                    </button>
                   </div>
                 </td>
               </tr>`
-
+              totalPrice += item.quantity * item.price;
+              
             }
-            $("#cart-body").append(html);
+           
+            $("#cart-body").empty().append(html);
+            $("#subtotal").empty().append( `<span class="price-currency-symbol">$ ${totalPrice}</span>`)
+            $("#total").empty().append( `<span class="price-currency-symbol">$ ${totalPrice}</span>`)
         }
 
       })
+
+
+      
+
+
+
+
 })
