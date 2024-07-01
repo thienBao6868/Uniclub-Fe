@@ -3,7 +3,7 @@ $(document).ready(function () {
 
   let address;
   let phone;
-  var totalPrice = 0;
+  let total ;
 
 
   function fetchData() {
@@ -26,20 +26,31 @@ $(document).ready(function () {
   fetchData();
 
   function renderCartTotal(listProductOfCart) {
-    if (listProductOfCart.length > 0) {
+    if (listProductOfCart.length >= 0) {
+        var totalPrice = 0;
+        if(listProductOfCart.length > 0){
+            for (i = 0; i < listProductOfCart.length; i++) {
+                totalPrice +=
+                  listProductOfCart[i].quantity * listProductOfCart[i].price;
+              }
+        
+              $("#subTotal")
+                .empty()
+                .append(`<span class="price-currency-symbol">$</span>${totalPrice}`);
+              $("#total")
+                .empty()
+                .append(`<span class="price-currency-symbol">$</span>${totalPrice}`);
+        }else{
+            $("#subTotal")
+            .empty()
+            .append(`<span class="price-currency-symbol"></span>`);
+          $("#total")
+            .empty()
+            .append(`<span class="price-currency-symbol"></span>`);
+        }
       
-      for (i = 0; i < listProductOfCart.length; i++) {
-        totalPrice +=
-          listProductOfCart[i].quantity * listProductOfCart[i].price;
-      }
-
-      $("#subTotal")
-        .empty()
-        .append(`<span class="price-currency-symbol">$</span>${totalPrice}`);
-      $("#total")
-        .empty()
-        .append(`<span class="price-currency-symbol">$</span>${totalPrice}`);
     }
+    total = totalPrice;
   }
 
   // Insert Order
@@ -59,6 +70,8 @@ $(document).ready(function () {
       }),
       success: function (data) {
         if(data.statusCode == 200){
+            address = $("#faddress").val("");
+            phone = $("#fphone").val("");
             fetchData();
         }
         
@@ -69,16 +82,19 @@ $(document).ready(function () {
     });
   }
 
-
   // Handle click button
 
   $('button[name="submit"]').on('click', function(e){
     e.preventDefault();
     address = $("#faddress").val();
     phone = $("#fphone").val();
-
-    if(address && phone && totalPrice){
-        insertOrder(address,phone,totalPrice);
+    if(total == 0){
+        alert(" Vui lòng thêm sản phẩm vào giỏ hàng")
+        return true;
+    };
+    if(address && phone && total){
+        insertOrder(address,phone,total);
+        alert("Order successful")
     }else{
         alert("Vui Lòng nhập Thông tin address và phone")
     }
