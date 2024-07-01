@@ -110,8 +110,8 @@ $(document).ready(function () {
           listProductOfCart[i].quantity * listProductOfCart[i].price;
       }
 
-      $("#subtotal").empty().append(`<em>$ ${totalPrice}</em>`)
-      $("#total").empty().append(`<em>$ ${totalPrice}</em>`)
+      $("#subtotal").empty().append(`<span class="price-currency-symbol">$</span>${totalPrice}`)
+      $("#total").empty().append(`<span class="price-currency-symbol">$</span>${totalPrice}`)
     }
   }
 
