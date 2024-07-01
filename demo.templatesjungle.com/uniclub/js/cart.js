@@ -17,6 +17,7 @@ $(document).ready(function () {
       success: function (data) {
         listProductOfCart = data.data;
         renderCarts(listProductOfCart);
+        renderCartTotal(listProductOfCart);
       },
       error: function (error) {
         console.error("Error fetching all products:", error);
@@ -54,18 +55,22 @@ $(document).ready(function () {
         <td class="py-4 align-middle">
           <div class="input-group product-qty align-items-center w-55>
             <span class="input-group-btn">
-              <button type="button" class="quantity-left-minus p-1 btn btn-light btn-number" data-type="minus">
+              <button type="button" class="quantity-left-minus p-1 btn btn-light btn-number" data-type="minus" data-cart-id="${
+                item.id
+              }">
                 <svg width="16" height="16">
                   <use xlink:href="#minus"></use>
                 </svg>
               </button>
             </span>
-            <input type="text" id="quantity" name="quantity"
+            <input type="text" id="quantity-${item.id}" name="quantity"
               class="form-control input-number text-center p-2 mx-1" value="${
                 item.quantity
               }">
             <span class="input-group-btn">
-              <button type="button" class="quantity-right-plus p-1 btn btn-light btn-number" data-type="plus"
+              <button type="button" class="quantity-right-plus p-1 btn btn-light btn-number" data-type="plus" data-cart-id="${
+                item.id
+              }"
                 data-field="">
                 <svg width="16" height="16">
                   <use xlink:href="#plus"></use>
@@ -96,7 +101,20 @@ $(document).ready(function () {
 
     $("#cart-body").empty().append(html);
   }
-  
+
+  function renderCartTotal(listProductOfCart) {
+    if (listProductOfCart.length > 0) {
+      var totalPrice = 0;
+      for (i = 0; i < listProductOfCart.length; i++) {
+        totalPrice +=
+          listProductOfCart[i].quantity * listProductOfCart[i].price;
+      }
+
+      $("#subtotal").empty().append(`<em>$ ${totalPrice}</em>`)
+      $("#total").empty().append(`<em>$ ${totalPrice}</em>`)
+    }
+  }
+
   // function deleted cart
 
   function deleteProductCart(idCart) {
@@ -110,8 +128,7 @@ $(document).ready(function () {
         },
         success: function (data) {
           if (data.statusCode == 200) {
-            window.location.href =
-              "http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/cart.html";
+            fetchData();
           }
         },
         error: function (error) {
@@ -133,37 +150,52 @@ $(document).ready(function () {
     deleteProductCart(idCart);
   });
 
+  // handle click update quantity of cart
+
+  $(document).on("click", ".quantity-right-plus", function () {
+    var cartId = $(this).data("cart-id");
+    var inputQuantity = $(`#quantity-${cartId}`);
+    var currentQuantity = parseInt(inputQuantity.val());
+    inputQuantity.val(currentQuantity + 1);
+    updateCartQuantity(cartId, currentQuantity + 1);
+  });
+
+  $(document).on("click", ".quantity-left-minus", function () {
+    var cartId = $(this).data("cart-id");
+    var inputQuantity = $(`#quantity-${cartId}`);
+    var currentQuantity = parseInt(inputQuantity.val());
+    if (currentQuantity > 1) {
+      inputQuantity.val(currentQuantity - 1);
+      updateCartQuantity(cartId, currentQuantity - 1);
+    }
+  });
+
   // function update cart
 
-    // Hàm cập nhật số lượng sản phẩm trong giỏ hàng
-    function updateCartQuantity(idCart, quantity) {
-      // Gọi API cập nhật số lượng sản phẩm
-     
-        $.ajax({
-          url: `http://localhost:8080/cart/update-quantity`,
-          method: "PUT",
-          contentType: "application/json",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: JSON.stringify({
-            idCart:idCart,
-            quantity: quantity,
-          }),
-          success: function (data) {
-            // Cập nhật lại tổng giá trị, hiển thị số lượng,...
-            console.log("Quantity updated successfully:", data);
-            // Cập nhật lại tổng giá trị giỏ hàng,...
-            window.location.href="http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/cart.html"
-          },
-          error: function (error) {
-            console.error("Error updating product quantity:", error);
-          },
-        });
-      
-    }
+  // Hàm cập nhật số lượng sản phẩm trong giỏ hàng
+  function updateCartQuantity(idCart, quantity) {
+    // Gọi API cập nhật số lượng sản phẩm
 
-
-
-
+    $.ajax({
+      url: `http://localhost:8080/cart/update-quantity`,
+      method: "PUT",
+      contentType: "application/json",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: JSON.stringify({
+        idCart: idCart,
+        quantity: quantity,
+      }),
+      success: function (data) {
+        // Cập nhật lại tổng giá trị, hiển thị số lượng,...
+        console.log("Quantity updated successfully:", data);
+        // Cập nhật lại tổng giá trị giỏ hàng,...
+        fetchData();
+      },
+      error: function (error) {
+        console.error("Error updating product quantity:", error);
+      },
+    });
+  }
 });
