@@ -92,18 +92,13 @@ $(document).ready(function () {
         alert(" Vui lòng thêm sản phẩm vào giỏ hàng")
         return true;
     };
+    
     if(address && phone && total){
         insertOrder(address,phone,total);
         alert("Order successful")
     }else{
         alert("Vui Lòng nhập Thông tin address và phone")
     }
-    
-
   })
-
-
-
-
 
 });
