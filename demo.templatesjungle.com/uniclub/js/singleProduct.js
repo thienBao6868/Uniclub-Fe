@@ -32,6 +32,7 @@ $(document).ready(function () {
     renderTags(product.tagList);
     renderColors(product.productDetailList);
     renderSizes(product.productDetailList);
+    renderQuantityInstock(selectColorId, selectSizeId);
   }
 
   function renderNameProduct(name) {
@@ -99,8 +100,9 @@ $(document).ready(function () {
                     </li>`;
     }
     $("#color-list").empty().append(htmlColorList);
+    selectColorId = colors[0].id
 
-    renderImagesProduct(productDetails, (currentColorId = colors[0].id));
+    renderImagesProduct(productDetails, selectColorId);
   }
 
   function renderSizes(productDetails) {
@@ -138,7 +140,7 @@ $(document).ready(function () {
     // process
     var htmlProductLargeSlider = "";
     var htmlProductThumbnailSlider = "";
-   
+
     currentColor.images.forEach((item) => {
       htmlProductLargeSlider += ` <div class="swiper-slide">
                        <img src="${item}" alt="product-large" class="img-fluid">
@@ -148,9 +150,34 @@ $(document).ready(function () {
                    <img src="${item}" alt="" class="thumb-image img-fluid">
                  </div>`;
     });
- 
+
     $("#product-large-slider").empty().append(htmlProductLargeSlider);
     $("#product-thumbnail-slider").empty().append(htmlProductThumbnailSlider);
+  }
+
+  // render quantity in stock
+
+  function renderQuantityInstock(selectColorId, selectSizeId) {
+    console.log("selectColorId  ",selectColorId)
+    console.log("selectSize", selectSizeId)
+
+    var htmlInStock = "";
+
+    if ((selectColorId, selectSizeId)) {
+      const productDetailWithIdColorAndIdSize = product.productDetailList.find(
+        (item) => item.color.id == selectColorId && item.size.id == selectSizeId
+      );
+      if (productDetailWithIdColorAndIdSize) {
+        htmlInStock = `<em>${productDetailWithIdColorAndIdSize?.quantity} in stock</em>`;
+      }else{
+        htmlInStock = `<em> in stock</em>`
+      }
+    } else {
+      htmlInStock = `<em> in stock</em>`;
+    }
+
+    $(".stock-number").empty().append(htmlInStock);
+    // <div class="stock-number text-dark"><em>2 in stock</em></div>
   }
 
   // Gán sự kiện click cho các phần tử có class là .select-item
@@ -169,23 +196,24 @@ $(document).ready(function () {
     console.log(selectColorId);
     // Thực hiện các hành động khác nếu cần
     renderImagesProduct(product.productDetailList, selectColorId);
+    renderQuantityInstock(selectColorId, selectSizeId);
   });
 
   $(document).on("click", ".select-item-size", function () {
     if ($(this).hasClass("disabled")) {
       return;
     }
-     // Xóa class "active" khỏi tất cả các phần tử <button>
-     $(".select-item-size button").removeClass("active");
-     $(".select-item-size").removeClass("disabled");
-     // Thêm class "active" cho phần tử <button> được click
-     $(this).find("button").addClass("active");
-     $(this).addClass("disabled");
+    // Xóa class "active" khỏi tất cả các phần tử <button>
+    $(".select-item-size button").removeClass("active");
+    $(".select-item-size").removeClass("disabled");
+    // Thêm class "active" cho phần tử <button> được click
+    $(this).find("button").addClass("active");
+    $(this).addClass("disabled");
 
-     selectSizeId = $(this).data("val");
-     
-  })
+    selectSizeId = $(this).data("val");
 
+    renderQuantityInstock(selectColorId, selectSizeId);
+  });
 
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
