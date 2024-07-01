@@ -64,7 +64,7 @@ $(document).ready(function(){
                 </td>
                 <td class="py-4 align-middle">
                   <div class="cart-remove">
-                    <button class="select-deleted" id-cart=${item.id}>
+                    <button class="select-deleted" data-val=${item.id}>
                       <svg width="24" height="24">
                         <use xlink:href="#trash"></use>
                       </svg>
@@ -83,8 +83,41 @@ $(document).ready(function(){
 
       })
 
+      function deleteProductCart(idCart){
 
-      
+        if (token) {
+          $.ajax({
+            url: `http://localhost:8080/cart/${idCart}`,
+            method: "DELETE",
+            contentType: "application/json",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            success: function (data) {
+              if (data.statusCode == 200) {
+                window.location.href="http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/cart.html"
+              }
+            },
+            error: function (error) {
+              console.error("Error delete product incart :", error);
+            },
+          });
+        } else {
+          window.location.href = "http://127.0.0.1:5500/demo.templatesjungle.com/uniclub/account.html"
+        }
+
+      }
+
+
+      // Document already
+
+      $(document).on("click", ".select-deleted", function () {
+
+        const idCart = $(this).data("val");
+
+        deleteProductCart(idCart)
+
+      })
 
 
 
