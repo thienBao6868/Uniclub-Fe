@@ -4,6 +4,8 @@ $(document).ready(function () {
     method: "GET",
     url: "http://localhost:8080/product/all?pageIndex=1&pageSize=8",
   }).done(function (result) {
+
+    console.log(result,"test result")
     if (result.data.length > 0) {
     
       var htmlContent = "";
