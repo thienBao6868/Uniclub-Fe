@@ -15,7 +15,9 @@
   <meta name="description" content="">
 </head>
 
-<link rel="stylesheet" href="../../jsdelivr/npm/swiper%409/swiper-bundle.min.css" />
+<!-- <link rel="stylesheet" href="../../jsdelivr/npm/swiper%409/swiper-bundle.min.css" /> -->
+
+</head>
 
 <link rel="stylesheet" type="text/css" href="icomoon/icomoon.css">
 
@@ -338,11 +340,11 @@
               <button
                 class="nav-link account-tab mx-3 fs-4 border-bottom border-dark-subtle border-0 text-capitalize fw-semibold active"
                 id="nav-sign-in-tab" data-bs-toggle="tab" data-bs-target="#nav-sign-in" type="button" role="tab"
-                aria-controls="nav-sign-in" aria-selected="false">Log In</button>
+                aria-controls="nav-sign-in" aria-selected="true">Log In</button>
               <button
                 class="nav-link account-tab mx-3 fs-4 border-bottom border-dark-subtle border-0 text-capitalize fw-semibold"
                 id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register" type="button" role="tab"
-                aria-controls="nav-register" aria-selected="true">Sign Up</button>
+                aria-controls="nav-register" aria-selected="false">Sign Up</button>
             </div>
           </nav>
           <div class="tab-content" id="nav-tabContent">
@@ -393,7 +395,7 @@
                       </div>
                     </label>
                     <div class="d-grid my-3">
-                      <a href="#" class="btn-login btn btn-dark btn-lg rounded-1">Log In</a>
+                      <button  type="button" class="btn-login btn btn-dark btn-lg rounded-1">Log In</button>
                     </div>
 
                   </div>
@@ -432,14 +434,14 @@
                 <form id="form1" class="form-group flex-wrap ">
                   <div class="form-input col-lg-12 my-4">
 
-                    <input type="text" id="exampleInputName" name="email" placeholder="Your full name"
-                      class="form-control mb-3 p-4">
+                    <!-- <input type="text" id="exampleInputName" name="email" placeholder="Your full name"
+                      class="form-control mb-3 p-4"> -->
                     <input type="text" id="exampleInputEmail1" name="email" placeholder="Your email address"
                       class="form-control mb-3 p-4">
                     <input type="password" id="inputPassword1" placeholder="Set your password"
                       class="form-control mb-3 p-4" aria-describedby="passwordHelpBlock">
-                    <input type="password" id="inputPassword2" placeholder="Retype your password"
-                      class="form-control mb-3 p-4" aria-describedby="passwordHelpBlock">
+                    <!-- <input type="password" id="inputPassword2" placeholder="Retype your password"
+                      class="form-control mb-3 p-4" aria-describedby="passwordHelpBlock"> -->
 
                     <!-- <label class="py-3 d-flex flex-wrap justify-content-between">
                       <div>
@@ -452,7 +454,7 @@
                       </div>
                     </label> -->
                     <div class="d-grid my-3">
-                      <a href="#" class="btn btn-dark btn-lg rounded-1">Sign Up</a>
+                      <button type="button" class="btn btn-signup btn-dark btn-lg rounded-1">Sign Up</button>
                     </div>
 
                   </div>
@@ -616,13 +618,14 @@
   <script src="js/jquery-1.11.0.min.js"></script>
   <script src="../../jsdelivr/npm/swiper%409/swiper-bundle.min.js"></script>
   <script src="../../jsdelivr/npm/bootstrap%405.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+  
     crossorigin="anonymous"></script>
   <script src="js/plugins.js"></script>
   <script src="js/script.js"></script>
   <script src="../../iconify/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   <script src="./js/account.js"></script>
   <script src="./js/hideElement.js"></script>
+  
 </body>
 
 

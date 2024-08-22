@@ -132,6 +132,10 @@ $(document).ready(function () {
               </div>
             </div>`;
       }
+    }else{
+      var htmlContent = ` <div class="center-box">
+        Không Tìm thấy sản phẩm
+    </div>`
     }
 
     $("#product-store").empty().append(htmlContent);
